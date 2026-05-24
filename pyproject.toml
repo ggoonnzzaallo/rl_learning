@@ -1,0 +1,19 @@
+[project]
+name = "rl-learning"
+version = "0.1.0"
+description = "Gymnasium + Stable-Baselines3 RL experiments"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "box2d-py>=2.3.8",
+    "gymnasium[mujoco]>=1.2.3",
+    "mujoco>=3.8.1",
+    "pygame>=2.6.1",
+    "stable-baselines3>=2.8.0",
+    "tensorboard>=2.20.0",
+]
+
+[project.optional-dependencies]
+snake = [
+    "opencv-python>=4.13.0.92",
+]
