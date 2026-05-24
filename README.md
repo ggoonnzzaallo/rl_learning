@@ -2,7 +2,17 @@
 
 Reinforcement learning experiments with [Gymnasium](https://gymnasium.farama.org/) and [Stable-Baselines3](https://stable-baselines3.readthedocs.io/).
 
-**Focus:** SB3 examples under `gymnasium/nov28_2024/` (start with `ppo_lander/`). NEAT experiments in `cartpole/` and `bipedal/` are archived learning material.
+## Project layout
+
+```
+gymnasium/may23_2026/          # Current SB3 learning track (recommended)
+  cartpole/                    # PPO + CartPole-v1
+  mountain_car/                # PPO (discrete) + SAC (continuous)
+gymnasium/nov28_2024/          # Earlier experiments (Lunar Lander, NEAT, Snake, …)
+mujoco/dec2_2024/              # MuJoCo Ant + PPO
+```
+
+NEAT experiments under `nov28_2024/cartpole/` and `bipedal/` are archived learning material.
 
 ## Local Setup
 
@@ -21,29 +31,64 @@ uv sync --extra snake   # OpenCV for custom_snake/
 
 ## Running examples
 
-Always use `uv run` from the repo root (or `cd` into the example folder first):
+Always use `uv run` from the repo root (or `cd` into the example folder first).
+
+### CartPole (PPO) — start here
 
 ```bash
-# Lunar Lander (SB3 + A2C)
-uv run python gymnasium/nov28_2024/ppo_lander/main.py
+cd gymnasium/may23_2026/cartpole
+# See ENV.md for environment reference
+uv run python explore.py          # random agent + re-run UI
+uv run python train.py            # opens TensorBoard; resumes if checkpoint exists
+uv run python train.py --fresh    # new random policy
+uv run python play.py
+```
 
-# Load a trained model
-cd gymnasium/nov28_2024/ppo_lander
-uv run python load.py
+### Mountain Car — discrete (PPO) vs continuous (SAC)
 
-# TensorBoard (from an example dir that has logs/)
+Harder than CartPole (sparse reward). Hyperparameters live in `variants.py` (`PPOVariant` / `SACVariant`).
+
+```bash
+cd gymnasium/may23_2026/mountain_car
+uv run python explore.py --env discrete      # random actions
+uv run python explore.py --env continuous
+
+uv run python train.py --env discrete          # PPO
+uv run python train.py --env continuous        # SAC
+uv run python train.py --env continuous --fresh
+
+uv run python play.py --env discrete           # loads ppo_*_final
+uv run python play.py --env continuous         # loads sac_*_final
+
+# TensorBoard (both variants under logs/)
 uv run tensorboard --logdir=logs
 ```
 
+| Variant | Env | Algorithm | Default model |
+|---------|-----|-----------|---------------|
+| `discrete` | `MountainCar-v0` | PPO | `models/discrete/ppo_mountain_car_discrete_final.zip` |
+| `continuous` | `MountainCarContinuous-v0` | SAC | `models/continuous/sac_mountain_car_continuous_final.zip` |
+
+Training **resumes from checkpoint by default**; use `--fresh` for a new run. Tune SAC exploration via `ent_coef` in `variants.py` (e.g. `"auto"`, `"auto_0.1"`, or a float).
+
+### Lunar Lander (older script)
+
 ```bash
-# Custom Snake (needs snake extra)
+uv run python gymnasium/nov28_2024/ppo_lander/main.py
+cd gymnasium/nov28_2024/ppo_lander && uv run python load.py
+```
+
+### Custom Snake (optional extra)
+
+```bash
 uv sync --extra snake
 cd gymnasium/nov28_2024/custom_snake
 uv run python sneklearn.py
 ```
 
+### MuJoCo Ant
+
 ```bash
-# MuJoCo Ant
 cd mujoco/dec2_2024
 uv run python train.py
 uv run python evaluate.py
@@ -54,8 +99,12 @@ uv run python evaluate.py
 | Package | Used for |
 |---------|----------|
 | `gymnasium` | Environments |
-| `stable-baselines3` | PPO, A2C, etc. |
+| `stable-baselines3` | PPO, SAC, A2C |
 | `tensorboard` | Training logs |
-| `box2d-py`, `pygame` | Lunar Lander, BipedalWalker |
+| `box2d-py`, `pygame` | Lunar Lander, Mountain Car rendering |
 | `mujoco` | Ant (`mujoco/dec2_2024/`) |
 | `opencv-python` (optional) | Custom Snake env |
+
+## Gitignored artifacts
+
+`models/`, `logs/`, and `.venv/` are not committed. Reproduce by running `train.py` in each example folder.
