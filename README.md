@@ -5,10 +5,9 @@ Reinforcement learning experiments with [Gymnasium](https://gymnasium.farama.org
 ## Project layout
 
 ```
-gymnasium/may23_2026/          # Current SB3 learning track (recommended)
-  cartpole/                    # PPO + CartPole-v1
-  mountain_car/                # PPO (discrete) + SAC (continuous)
+gymnasium/may23_2026/          # SB3 learning track (CartPole, Mountain Car)
 gymnasium/nov28_2024/          # Earlier experiments (Lunar Lander, NEAT, Snake, …)
+mujoco/may23_2026/             # MuJoCo custom envs (balance bot)
 mujoco/dec2_2024/              # MuJoCo Ant + PPO
 ```
 
@@ -94,6 +93,22 @@ uv run python train.py
 uv run python evaluate.py
 ```
 
+### Balance bot (MuJoCo + SAC)
+
+Custom two-wheeled inverted pendulum. **Validate sim with PID before training.**
+
+```bash
+cd mujoco/may23_2026/balance_bot
+uv run python explore.py
+uv run python watch.py                 # passive fall, zero motor input
+uv run python pid_baseline.py          # compare sim to real robot behaviour
+uv run python train.py                 # SAC; resumes by default
+uv run python train.py --fresh
+uv run python play.py
+```
+
+See [`mujoco/may23_2026/balance_bot/README.md`](mujoco/may23_2026/balance_bot/README.md) for physical params and future work (friction, contact, etc.).
+
 ## Dependencies
 
 | Package | Used for |
@@ -102,7 +117,7 @@ uv run python evaluate.py
 | `stable-baselines3` | PPO, SAC, A2C |
 | `tensorboard` | Training logs |
 | `box2d-py`, `pygame` | Lunar Lander, Mountain Car rendering |
-| `mujoco` | Ant (`mujoco/dec2_2024/`) |
+| `mujoco` | Ant, balance bot (`mujoco/may23_2026/balance_bot/`) |
 | `opencv-python` (optional) | Custom Snake env |
 
 ## Gitignored artifacts
