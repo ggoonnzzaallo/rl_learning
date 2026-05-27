@@ -17,6 +17,7 @@ mujoco/
   Archive/first_attempt/   # Archived early MuJoCo scripts
 
 serialcom/dec1_2024/       # Arduino ↔ Python serial experiments (servo, basic I/O)
+pimoroni/                  # Pimoroni Servo 2040 (MicroPython on board; see pimoroni/README.md)
 ```
 
 NEAT experiments under `nov28_2024/cartpole/` and `bipedal/` are archived learning material. `first_attempt/` and `mujoco/Archive/` are older scratch code, not part of the main SB3 workflow.
@@ -34,6 +35,7 @@ Optional extras:
 
 ```bash
 uv sync --extra snake   # OpenCV for custom_snake/
+uv sync --extra pico    # mpremote for Pimoroni Servo 2040
 ```
 
 Always use `uv run` from the repo root (or `cd` into an example folder first).
@@ -131,6 +133,10 @@ Default SAC model: `models/default/sac_balance_bot_final.zip`
 ### Serial communication (Arduino)
 
 Standalone experiments under `serialcom/dec1_2024/` — basic Python ↔ Arduino messaging and servo sketches. Not wired into the main `pyproject.toml` dependencies; install `pyserial` locally if you revisit these scripts.
+
+### Pimoroni Servo 2040
+
+MicroPython runs **on the board**; use Cursor to edit and `uv sync --extra pico` + `uv run mpremote` to run scripts. See [`pimoroni/README.md`](pimoroni/README.md).
 
 ## Dependencies
 

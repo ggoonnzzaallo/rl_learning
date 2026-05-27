@@ -17,3 +17,6 @@ dependencies = [
 snake = [
     "opencv-python>=4.13.0.92",
 ]
+pico = [
+    "mpremote>=1.28.0",
+]
