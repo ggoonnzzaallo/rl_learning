@@ -1,17 +1,25 @@
 # rl_learning
 
-Reinforcement learning experiments with [Gymnasium](https://gymnasium.farama.org/) and [Stable-Baselines3](https://stable-baselines3.readthedocs.io/).
+Reinforcement learning experiments with [Gymnasium](https://gymnasium.farama.org/) and [Stable-Baselines3](https://stable-baselines3.readthedocs.io/). Python 3.12+, managed with [uv](https://docs.astral.sh/uv/).
 
 ## Project layout
 
 ```
-gymnasium/may23_2026/          # SB3 learning track (CartPole, Mountain Car)
-gymnasium/nov28_2024/          # Earlier experiments (Lunar Lander, NEAT, Snake, …)
-mujoco/may23_2026/             # MuJoCo custom envs (balance bot)
-mujoco/dec2_2024/              # MuJoCo Ant + PPO
+gymnasium/
+  may23_2026/              # SB3 learning track (CartPole, Mountain Car) + shared training_utils.py
+  nov28_2024/              # Earlier experiments (Lunar Lander, NEAT, Snake, …)
+  first_attempt/           # Archived NEAT + BipedalWalker scratch work
+  tutorials.md             # Curated YouTube / reading links
+
+mujoco/
+  may23_2026/balance_bot/  # Custom two-wheeled inverted pendulum (MuJoCo + SAC)
+  dec2_2024/               # MuJoCo Ant + PPO
+  Archive/first_attempt/   # Archived early MuJoCo scripts
+
+serialcom/dec1_2024/       # Arduino ↔ Python serial experiments (servo, basic I/O)
 ```
 
-NEAT experiments under `nov28_2024/cartpole/` and `bipedal/` are archived learning material.
+NEAT experiments under `nov28_2024/cartpole/` and `bipedal/` are archived learning material. `first_attempt/` and `mujoco/Archive/` are older scratch code, not part of the main SB3 workflow.
 
 ## Local Setup
 
@@ -28,9 +36,9 @@ Optional extras:
 uv sync --extra snake   # OpenCV for custom_snake/
 ```
 
-## Running examples
+Always use `uv run` from the repo root (or `cd` into an example folder first).
 
-Always use `uv run` from the repo root (or `cd` into the example folder first).
+## Running examples
 
 ### CartPole (PPO) — start here
 
@@ -42,6 +50,8 @@ uv run python train.py            # opens TensorBoard; resumes if checkpoint exi
 uv run python train.py --fresh    # new random policy
 uv run python play.py
 ```
+
+CartPole and Mountain Car share checkpoint helpers in [`gymnasium/may23_2026/training_utils.py`](gymnasium/may23_2026/training_utils.py).
 
 ### Mountain Car — discrete (PPO) vs continuous (SAC)
 
@@ -102,24 +112,37 @@ cd mujoco/may23_2026/balance_bot
 uv run python explore.py
 uv run python watch.py                 # passive fall, zero motor input
 uv run python pid_baseline.py          # compare sim to real robot behaviour
+uv run python poke.py                  # MuJoCo interactive viewer (click to push)
 uv run python train.py                 # SAC; resumes by default
 uv run python train.py --fresh
 uv run python play.py
 ```
 
-See [`mujoco/may23_2026/balance_bot/README.md`](mujoco/may23_2026/balance_bot/README.md) for physical params and future work (friction, contact, etc.).
+| Doc | Contents |
+|-----|----------|
+| [`balance_bot/README.md`](mujoco/may23_2026/balance_bot/README.md) | Coordinates, camera, `robot_params.py`, PID gate, training |
+| [`balance_bot/ENV.md`](mujoco/may23_2026/balance_bot/ENV.md) | Observation, action, reward, termination |
+| [`balance_bot/DEPLOY_NOTES.md`](mujoco/may23_2026/balance_bot/DEPLOY_NOTES.md) | Sim-to-real checklist (future) |
+
+Hardware-side PID / IMU code for the Raspberry Pi lives in `actual_robot.py` and `actual_robot_drive_mode.py` (run on the Pi, not via `uv run` in this repo).
+
+Default SAC model: `models/default/sac_balance_bot_final.zip`
+
+### Serial communication (Arduino)
+
+Standalone experiments under `serialcom/dec1_2024/` — basic Python ↔ Arduino messaging and servo sketches. Not wired into the main `pyproject.toml` dependencies; install `pyserial` locally if you revisit these scripts.
 
 ## Dependencies
 
 | Package | Used for |
 |---------|----------|
-| `gymnasium` | Environments |
+| `gymnasium[mujoco]` | Environments (Box2D + MuJoCo extras) |
 | `stable-baselines3` | PPO, SAC, A2C |
 | `tensorboard` | Training logs |
 | `box2d-py`, `pygame` | Lunar Lander, Mountain Car rendering |
-| `mujoco` | Ant, balance bot (`mujoco/may23_2026/balance_bot/`) |
-| `opencv-python` (optional) | Custom Snake env |
+| `mujoco` | Ant, balance bot |
+| `opencv-python` (optional `[snake]` extra) | Custom Snake env |
 
 ## Gitignored artifacts
 
-`models/`, `logs/`, and `.venv/` are not committed. Reproduce by running `train.py` in each example folder.
+`models/`, `logs/`, `.venv/`, and `.mujoco_cache/` are not committed. Reproduce trained policies by running `train.py` in each example folder.
